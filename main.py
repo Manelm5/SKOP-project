@@ -19,6 +19,8 @@ from flask import Flask, render_template
 # called `app` in `main.py`.
 app = Flask(__name__)
 
+# This works as a controller in MVC architecture
+
 
 @app.route('/')
 def hello():
