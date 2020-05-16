@@ -23,9 +23,21 @@ app = Flask(__name__)
 
 
 @app.route('/')
-def hello():
+def mainpage():
     """Return a friendly HTTP greeting."""
-    return render_template("main_page.html")
+    return render_template("main_guille.html") # Aqui colocar o la nuestra o la tuya Guille, como quieras
+
+
+@app.route('/login')
+def login():
+    """Return a friendly HTTP greeting."""
+    return render_template("login.html")
+
+
+@app.route('/register')
+def register():
+    """Return a friendly HTTP greeting."""
+    return render_template("register.html")
 
 
 if __name__ == '__main__':

@@ -1,1 +1,4 @@
 Flask==1.1.2
+firebase-admin=4.3.0
+requests=2.11.1
+pyrebase=3.0.27
