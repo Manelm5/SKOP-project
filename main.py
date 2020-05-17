@@ -13,7 +13,8 @@
 # limitations under the License.
 
 # [START gae_python37_app]
-from flask import Flask, render_template
+from flask import *
+import models as m
 
 # If `entrypoint` is not defined in app.yaml, App Engine will look for an app
 # called `app` in `main.py`.
@@ -21,23 +22,46 @@ app = Flask(__name__)
 
 # This works as a controller in MVC architecture
 
-
-@app.route('/')
-def mainpage():
-    """Return a friendly HTTP greeting."""
-    return render_template("main_guille.html") # Aqui colocar o la nuestra o la tuya Guille, como quieras
+categorias = ["cooking", "maths", "English", "music", "History"]
 
 
-@app.route('/login')
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     """Return a friendly HTTP greeting."""
     return render_template("login.html")
-
 
 @app.route('/register')
 def register():
     """Return a friendly HTTP greeting."""
     return render_template("register.html")
+
+
+#Falta añadir id de usuario al video y categorizar
+@app.route('/upload', methods=['GET', 'POST'])
+def uploadFile():
+    if request.method == 'POST':
+        upload = request.files['upload']
+        title = request.form['title']
+        category = request.form.get('category')
+        m.storage.child(category + "/" + title + ".mp4").put(upload)
+        return redirect(url_for('mainpage'))
+    return render_template('UploadFile1.html', categorias = categorias)
+
+
+@app.route('/categoryVideos', methods=['GET', 'POST'])
+def categoryVideos():
+    category = request.args['cat']
+    links = m.storage.child( category + '/test.mp4').get_url(None) #TODO
+    return render_template('CategoryVideos.html', l=links, c = category)
+
+
+@app.route('/', methods=['GET', 'POST'])
+def mainpage():
+    app.logger.debug('Arranque de la aplicacion')
+
+    """Return a friendly HTTP greeting."""
+    return render_template("main_guille.html", categorias=categorias) # Aqui colocar o la nuestra o la tuya Guille, como quieras
+
 
 
 if __name__ == '__main__':

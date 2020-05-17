@@ -27,6 +27,7 @@ config = {
 pyrebase = pyrebase.initialize_app(config)
 auth = pyrebase.auth()
 
+storage = pyrebase.storage()
 
 #auth.create_user_with_email_and_password(email="danielcruanyes@gmail.com", password="xxxxxx")
 
