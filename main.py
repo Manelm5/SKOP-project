@@ -20,17 +20,24 @@ import models as m
 # called `app` in `main.py`.
 app = Flask(__name__)
 
+#clave privada de cifrado de cookies
+app.secret_key = "1234"
+
 # This works as a controller in MVC architecture
 
 categorias = ["cooking", "maths", "English", "music", "History"]
 
+@app.before_request
+def session_management():
+    session.permanent = True
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     """Return a friendly HTTP greeting."""
     return render_template("login.html")
+    return mainpage()
 
-@app.route('/register')
+@app.route('/register', methods=["GET", "POST"])
 def register():
     """Return a friendly HTTP greeting."""
     return render_template("register.html")
@@ -58,7 +65,6 @@ def categoryVideos():
 @app.route('/', methods=['GET', 'POST'])
 def mainpage():
     app.logger.debug('Arranque de la aplicacion')
-
     """Return a friendly HTTP greeting."""
     return render_template("main_guille.html", categorias=categorias) # Aqui colocar o la nuestra o la tuya Guille, como quieras
 

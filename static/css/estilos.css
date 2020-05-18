@@ -1,5 +1,17 @@
 
+/*---------------*/
+/***** Bubba *****/
+/*---------------*/
 
+
+figure.effecthovercard:hover img {
+	opacity: 0.6;
+}
+
+a.cardlink{
+	text-decoration: none;
+	color: black;
+}
 /*====================
 	Footer
 ====================== */

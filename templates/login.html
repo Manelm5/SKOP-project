@@ -31,7 +31,7 @@
   <!--NAV-->
   <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <a class="navbar-brand" href="<?php echo WEB_URL?>">SKOP</a>
+  <a class="navbar-brand" href="{{url_for('mainpage')}}">SKOP</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -42,7 +42,7 @@
         <a class="nav-link" href="">Home <span class="sr-only">(current)</span></a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="<?php echo WEB_URL?>?action=principal">Explore</a>
+        <a class="nav-link" href="{{url_for('mainpage')}}">Explore</a>
       </li>
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -56,7 +56,7 @@
         </div>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="<?php echo WEB_URL?>?action=login">Sign In</a>
+        <a class="nav-link" href="{{url_for('login')}}">Sign In</a>
       </li>
     </ul>
     <form class="form-inline my-2 my-lg-0">
@@ -114,7 +114,7 @@
                               </p>
                            </div>
                            <div class="form-group">
-                              <p class="text-center">Don't have account? <a href="<?php echo WEB_URL?>?action=registrar" id="signup">Sign up here</a></p>
+                              <p class="text-center">Don't have account? <a href="{{url_for('register')}}" id="signup">Sign up here</a></p>
                            </div>
                         </form>
 
