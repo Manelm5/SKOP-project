@@ -9,11 +9,6 @@ cred = credentials.Certificate('skop-project-firebase-adminsdk-s2om4-43b7edc9ef.
 firebase_admin.initialize_app(cred)
 
 db = firestore.client()
-city_ref = db.collection(u'cities').document()
-
-city_ref.set({
-    u'capital': True
-}, merge=True)
 
 config = {
   "apiKey": "AIzaSyD6hkzuOIHHfIhgbduQxQPnQVnq2v-39wM",
@@ -24,22 +19,10 @@ config = {
   "messagingSenderId": "518648299242",
   "projectId": "skop-project"
 }
-pyrebase = pyrebase.initialize_app(config)
-auth = pyrebase.auth()
+auth_pyrebase = pyrebase.initialize_app(config)
+auth = auth_pyrebase.auth()
 
-storage = pyrebase.storage()
-
-#auth.create_user_with_email_and_password(email="danielcruanyes@gmail.com", password="xxxxxx")
-
-# Log the user in
-user = auth.sign_in_with_email_and_password(email="danielcruanyes@gmail.com", password="xxxxxx")
-#auth.send_email_verification(user['idToken'])
-
-print (auth.get_account_info(user['idToken']))
-
-
-
-
+storage = auth_pyrebase.storage()
 
 
 # p1 = Person('example@example.com', +34689876876, 'secretPassword', 'John Doe',
@@ -108,3 +91,21 @@ def printAllUsers():
         print('User: ' + user.uid)
 
 
+def registerUser(email, password, firstname, lastname):
+
+    try:
+        user = auth.create_user_with_email_and_password(email, password)
+        data = {
+            u'firstname': firstname,
+            u'lastname': lastname,
+        }
+        db.collection(u'users').document(user['localId']).set(data)
+        response = "Successfully created user " + str(email)
+    except Exception as e:
+        print(e)
+        if hasattr(e, 'message'):
+            response = e.message
+        else:
+            response = "Unknown error."
+    print(response)
+    return response

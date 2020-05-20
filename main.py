@@ -37,11 +37,6 @@ def login():
     return render_template("login.html")
     return mainpage()
 
-@app.route('/register', methods=["GET", "POST"])
-def register():
-    """Return a friendly HTTP greeting."""
-    return render_template("register.html")
-
 
 #Falta añadir id de usuario al video y categorizar
 @app.route('/upload', methods=['GET', 'POST'])
@@ -67,6 +62,17 @@ def mainpage():
     app.logger.debug('Arranque de la aplicacion')
     """Return a friendly HTTP greeting."""
     return render_template("main_guille.html", categorias=categorias) # Aqui colocar o la nuestra o la tuya Guille, como quieras
+
+
+@app.route('/register', methods=["GET", "POST"])
+def register():
+    if request.method == 'POST':
+        firstname = request.form['firstname']
+        lastname = request.form['lastname']
+        email = request.form['email']
+        password = request.form['password']
+        response = m.registerUser(email, password, firstname, lastname)
+    return render_template("register.html")
 
 
 
