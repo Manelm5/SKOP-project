@@ -1,6 +1,7 @@
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
+from flask import session
 #from firebase_admin import auth
 
 import pyrebase
@@ -107,5 +108,30 @@ def registerUser(email, password, firstname, lastname):
             response = e.message
         else:
             response = "Unknown error."
+    print(response)
+    return response
+
+
+def login_user(email, password):
+
+    try:
+        user = auth.sign_in_with_email_and_password(email, password)
+        user_id = user['localId']
+        session["userId"] = user_id
+        response = "Successfully login user " + str(user['localId'])
+    except Exception as e:
+        print(e)
+        if hasattr(e, 'message'):
+            response = e.message
+        else:
+            response = "Unknown error."
+    print(response)
+    return response
+
+
+def logout_user():
+    user_id = session["userId"]
+    session["userId"] = None
+    response = "User " + str(user_id) + " log out successfully"
     print(response)
     return response

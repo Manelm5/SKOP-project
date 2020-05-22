@@ -33,9 +33,18 @@ def session_management():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    """Return a friendly HTTP greeting."""
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+        m.login_user(email, password)
+        return render_template("main_guille.html", categorias=categorias)
     return render_template("login.html")
-    return mainpage()
+
+
+@app.route('/logout', methods=['GET', 'POST'])
+def logout():
+    m.logout_user()
+    return render_template("main_guille.html", categorias=categorias)
 
 
 #Falta añadir id de usuario al video y categorizar
