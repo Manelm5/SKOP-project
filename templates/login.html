@@ -72,7 +72,21 @@
 </html>
 
 
-</div>
+<!-- Contenido HTML que utilizo para cuando hago un flash desde Flask, es decir, cuando quiero mostrar un mensaje directamente desde el servidor -->
+ {% block content %}
+    <div class="container">
+    {% for message in get_flashed_messages() %}
+    <div class="alert alert-warning">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        {{ message }}
+    </div>
+    {% endfor %}
+
+    {% block page_content %}{% endblock %}
+    </div>
+ {% endblock %}
+
+ </div>
 
    <!-- LOGIN PEGADO TAL CUAL -->
     <div class="container">
@@ -119,4 +133,7 @@
                         </form>
 
 				</div>
-			</div>
+            </div>
+            </div>
+        </div>
+    </div>

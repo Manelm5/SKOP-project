@@ -3,8 +3,8 @@ from firebase_admin import credentials
 from firebase_admin import firestore
 from flask import session
 #from firebase_admin import auth
-
 import pyrebase
+import json
 
 cred = credentials.Certificate('skop-project-firebase-adminsdk-s2om4-43b7edc9ef.json')
 firebase_admin.initialize_app(cred)
@@ -94,6 +94,7 @@ def printAllUsers():
 
 def registerUser(email, password, firstname, lastname):
 
+    response = []
     try:
         user = auth.create_user_with_email_and_password(email, password)
         data = {
@@ -101,14 +102,12 @@ def registerUser(email, password, firstname, lastname):
             u'lastname': lastname,
         }
         db.collection(u'users').document(user['localId']).set(data)
-        response = "Successfully created user " + str(email)
-    except Exception as e:
-        print(e)
-        if hasattr(e, 'message'):
-            response = e.message
-        else:
-            response = "Unknown error."
-    print(response)
+        text = "Successfully created user " + str(email) + " redirectered to login page."
+        response.append(True)
+        response.append(text)
+    except Exception as error:
+        response.append(False)
+        response.append(error)
     return response
 
 
@@ -118,7 +117,7 @@ def login_user(email, password):
         user = auth.sign_in_with_email_and_password(email, password)
         user_id = user['localId']
         session["userId"] = user_id
-        response = "Successfully login user " + str(user['localId'])
+        response = "Successfully user login: " + str(user['localId'])
     except Exception as e:
         print(e)
         if hasattr(e, 'message'):
