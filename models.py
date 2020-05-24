@@ -102,6 +102,12 @@ def registerUser(email, password, firstname, lastname):
             u'lastname': lastname,
         }
         db.collection(u'users').document(user['localId']).set(data)
+
+        data = {
+            u'links': []
+        }
+        db.collection(u'videos').document(user['localId']).set(data)
+
         text = "Successfully created user " + str(email) + " redirectered to login page."
         response.append(True)
         response.append(text)
@@ -112,7 +118,7 @@ def registerUser(email, password, firstname, lastname):
 
 
 def login_user(email, password):
-
+    session["userId"] = None
     try:
         user = auth.sign_in_with_email_and_password(email, password)
         user_id = user['localId']
@@ -125,7 +131,7 @@ def login_user(email, password):
         else:
             response = "Unknown error."
     print(response)
-    return response
+    return session["userId"]
 
 
 def logout_user():
