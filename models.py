@@ -140,3 +140,11 @@ def logout_user():
     response = "User " + str(user_id) + " log out successfully"
     print(response)
     return response
+
+
+def get_videos_by_category(category):
+    existing_videos = db.collection(u'videos').where(u'category', u'==', category).stream()
+    videos = []
+    for post in existing_videos:
+        videos.append(post.to_dict())
+    return videos

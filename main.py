@@ -71,10 +71,13 @@ def uploadFile():
         link = str(m.storage.child(category + "/" + title + ".mp4").get_url(None))
         print(link)
         data = {
-            u'link': m.firestore.firestore.ArrayUnion([link])
+            u'userId': session["userId"],
+            u'link': link,
+            u'title': title,
+            u'category': category
         }
 
-        m.db.collection(u'videos').document(str(session["userId"])).update(data)
+        m.db.collection(u'videos').document().set(data)
         subs.generateSubtitles(link, path, title)
         return redirect(url_for('mainpage'))
 
@@ -85,7 +88,9 @@ def uploadFile():
 def categoryVideos():
     category = request.args['cat']
     links = m.storage.child(category + '/TEST1.mp4').get_url(None)  # TODO
-    return render_template('CategoryVideos.html', l=links, c=category)
+    category_videos = m.get_videos_by_category(category)
+    link = category_videos
+    return render_template('CategoryVideos.html', l=link, c=category)
 
 
 @app.route('/', methods=['GET', 'POST'])
