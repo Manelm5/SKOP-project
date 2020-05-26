@@ -2,6 +2,8 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
 from flask import session
+from urllib import  parse
+import re
 #from firebase_admin import auth
 import pyrebase
 import json
@@ -24,6 +26,7 @@ auth_pyrebase = pyrebase.initialize_app(config)
 auth = auth_pyrebase.auth()
 
 storage = auth_pyrebase.storage()
+
 
 
 # p1 = Person('example@example.com', +34689876876, 'secretPassword', 'John Doe',
@@ -148,3 +151,51 @@ def get_videos_by_category(category):
     for post in existing_videos:
         videos.append(post.to_dict())
     return videos
+
+def get_videos_by_userId(userId):
+
+    existing_videos = db.collection(u'videos').where(u'userId', u'==', userId).stream()
+    videos = []
+    for post in existing_videos:
+        videos.append(post.to_dict())
+    return videos
+
+def deleteVideoFromUrl(link):
+    path = urlToBucketPath(link)[1]
+    subsPath = path.split("/")[0] + "/subtitles_" + path.split("/")[1].split(".")[0] + ".srt"
+    storage.child(path).delete(path)
+    storage.child(subsPath).delete(subsPath)
+    print("deleting db")
+    a = db.collection(u'videos').where(u'link', u'==', link).stream()
+    for docs in a:
+        docs.reference.delete()
+
+    print("db delete")
+
+def urlToBucketPath (url):
+    """Convert a Firebase HTTP URL to a (bucket, path) tuple,
+    Firebase's `refFromURL`.
+    """
+    bucket_domain = '([A-Za-z0-9.\\-]+)'
+    is_http = not url.startswith('gs://')
+
+    if is_http:
+        path = '(/([^?#]*).*)?$'
+        version =  'v[A-Za-z0-9_]+'
+        rex = (
+            '^https?://firebasestorage\\.googleapis\\.com/' +
+            version + '/b/' + bucket_domain + '/o' + path)
+    else:
+        gs_path = '(/(.*))?$'
+        rex = '^gs://' + bucket_domain + gs_path
+
+    matches = re.match(rex, url, re.I)
+    if not matches:
+        raise Exception('URL does not match a bucket: %s' % url)
+
+    bucket, _, path = matches.groups()
+
+    if is_http:
+        path = parse.unquote(path)
+
+    return (bucket, path)

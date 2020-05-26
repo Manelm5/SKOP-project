@@ -69,10 +69,11 @@ def uploadFile():
         path = category + "/" + title + ".mp4"
         m.storage.child(path).put(upload)
         link = str(m.storage.child(category + "/" + title + ".mp4").get_url(None))
-        print(link)
+        subLink = str(m.storage.child(category + "/" + "subtitles_" + title + ".mp4").get_url(None))
         data = {
             u'userId': session["userId"],
             u'link': link,
+            u'SubLink': subLink,
             u'title': title,
             u'category': category
         }
@@ -87,10 +88,23 @@ def uploadFile():
 @app.route('/categoryVideos', methods=['GET', 'POST'])
 def categoryVideos():
     category = request.args['cat']
-    links = m.storage.child(category + '/TEST1.mp4').get_url(None)  # TODO
     category_videos = m.get_videos_by_category(category)
     link = category_videos
     return render_template('CategoryVideos.html', l=link, c=category)
+
+@app.route('/myVideos', methods=['GET', 'POST'])
+def myVideos():
+    userId = session["userId"]
+    userVideos = m.get_videos_by_userId(userId)
+
+
+    if request.method == 'POST':
+        link = request.form['deleteVideo']
+        m.deleteVideoFromUrl(link)
+        print("done")
+        return redirect(url_for('myVideos'))
+
+    return render_template('myVideos.html', l=userVideos)
 
 
 @app.route('/', methods=['GET', 'POST'])
