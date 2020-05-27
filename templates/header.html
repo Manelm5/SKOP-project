@@ -15,13 +15,11 @@
       {% if session.get('userId') is not none %}
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Dropdown
+          Account
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
           <a class="dropdown-item" href="/upload">Upload File</a>
           <a class="dropdown-item" href="{{url_for('myVideos')}}">My videos</a>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#">Something else here</a>
         </div>
       </li>
       {% endif %}

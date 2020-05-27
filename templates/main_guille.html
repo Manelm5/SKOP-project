@@ -45,13 +45,12 @@
     <div class="row justify-content-center">
       <!--CARD-->
       {% for c in categorias %}
-      <a class='cardlink' href="{{ url_for('categoryVideos', cat = c) }}">
+      <a class='cardlink' href="{{ url_for('categoryVideos', cat = c['name']) }}">
         <div class="card" style="width: 18rem;">
-          <figure class="effecthovercard">     
-            <img class="card-img-top" src="../static/img/cocina.jpg" alt="Cocina">
+          <figure class="effecthovercard">
+            <img class="card-img-top" src="{{c['image']}}" alt="Cocina">
             <div class="card-body">
-              <h5 class="card-title">{{ c }}</h5>
-              <p class="card-text">...</p>
+              <h5 class="card-title">{{ c['name'] }}</h5>
             </div>
           </figure>
         </div>

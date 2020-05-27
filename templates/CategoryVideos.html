@@ -14,7 +14,7 @@
   <!--NAV-->
   <body>
 
-  {% include "header.html" %}
+ {% include "header.html" %}
 
 <div class="spacer-30"></div>
 
@@ -43,24 +43,27 @@
   <div class="container">
     <!--CATEGORIAS-->
     <div class="row justify-content-center">
-      {%for video in l%}
       <!--CARD-->
-      <div style="
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  line-height: 75px;
-  text-align: center;">
-         <video width="320" height="240" src="{{video['link']}}" type="video/mp4" controls>
-          <track label="Español" kind="subtitles" srclang="es" src="{{video['subLink']}}" default>
-           <track label="English" kind="subtitles" srclang="de" src="{{video['subLink']}}">
-        </video>
-      </div>
-      </div>
-      {%endfor%}
+       {%for video in l%}
+        <div class="col-md-6 ">
+            <div class="card">
+                <div class="card-image">
+                    <div class="embed-responsive embed-responsive-16by9">
+                        <video width="320" height="240" src="{{video['link']}}" type="video/mp4" controls>
+                            <track label="Español" kind="subtitles" srclang="es" src="{{video['subLink']}}" default>
+                            <track label="English" kind="subtitles" srclang="de" src="{{video['subLink']}}">
+                        </video>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <h3>{{video['title']}}</h3>
 
-</div>
+                </div><!-- card content -->
+            </div>
+        </div>
+      {%endfor%}
   </div>
+</div>
 
 
 <!-- FOOTER -->
@@ -143,3 +146,4 @@
 </div>
 </div>
 </footer>
+</div>

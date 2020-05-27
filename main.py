@@ -27,7 +27,16 @@ app.secret_key = "1234"
 
 # This works as a controller in MVC architecture
 
-categorias = ["cooking", "maths", "English", "music", "History"]
+class Category:
+    def __init__(self, name, image):
+        self.name = name
+        self.image = image
+
+categorias = ["Cooking", "Maths", "Sport", "Music", "History"]
+
+categorias = [Category("Cooking","../static/img/cocina.jpg"), Category("Maths","../static/img/maths.jpg"),
+              Category("Sport","../static/img/gym.jpg"), Category("Music","../static/img/musica.jpg"),
+              Category("History","../static/img/history.png")]
 
 
 @app.before_request
@@ -69,7 +78,7 @@ def uploadFile():
         path = category + "/" + title + ".mp4"
         m.storage.child(path).put(upload)
         link = str(m.storage.child(category + "/" + title + ".mp4").get_url(None))
-        subLink = str(m.storage.child(category + "/" + "subtitles_" + title + ".mp4").get_url(None))
+        subLink = str(m.storage.child(category + "/" + "subtitles_" + title + ".srt").get_url(None))
         data = {
             u'userId': session["userId"],
             u'link': link,
@@ -111,7 +120,7 @@ def myVideos():
 def mainpage():
     """Return a friendly HTTP greeting."""
     return render_template("main_guille.html",
-                           categorias=categorias, user=session["userId"])
+                           categorias=categorias)
 
 
 @app.route('/register', methods=["GET", "POST"])

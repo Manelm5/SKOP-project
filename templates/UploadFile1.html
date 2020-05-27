@@ -49,7 +49,7 @@
   <section class="active">
       Category: <select name="category">
          {% for c in categorias %}
-              <option value="{{ c }}">{{ c }}</option>
+              <option value="{{ c['name'] }}">{{ c['name'] }}</option>
               {% endfor %}
             </select>
       </select>
