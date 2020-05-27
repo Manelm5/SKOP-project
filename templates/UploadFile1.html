@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="static/css/estilos.css">
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
     <title>SKOP</title>
   </head>
   <!--NAV-->
@@ -65,8 +67,18 @@
   </div>
 
   <div class="form-group">
-    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Upload</button>
+    <button class="btn btn-outline-success my-2 my-sm-0" type="submit" id="upload" >Upload</button>
   </div>
+  <script>
+    $(document).ready(function(){
+    $('#upload').click(function() {
+      $('.spinner-border').toggle("slide");
+      $('.cargando').toggle("slide");
+    });
+});
+  </script>
+  <div class="spinner-border" role="status" style= "display: none;"></div>
+  <h5 class="cargando" style="display: none;">Cargando la subida de video...</h5>
 
 </form>
 
