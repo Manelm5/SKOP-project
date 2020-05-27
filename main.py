@@ -50,7 +50,8 @@ def login():
         email = request.form['email']
         password = request.form['password']
         session["userId"] = m.login_user(email, password)
-        return render_template("main_guille.html", categorias=categorias, user=session["userId"])
+        session["email"] = request.form['email']
+        return render_template("main_guille.html", categorias=categorias, user=session["userId"], email=session["email"])
     return render_template("login.html")
 
 

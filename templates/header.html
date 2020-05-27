@@ -19,8 +19,14 @@
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
           <a class="dropdown-item" href="/upload">Upload File</a>
+          <div class="dropdown-divider"></div>
           <a class="dropdown-item" href="{{url_for('myVideos')}}">My videos</a>
         </div>
+      </li>
+      {% endif %}
+      {% if session.get('userId') is not none %}
+      <li class="nav-item">
+        <a class="nav-link" href=""> {{session.email}}</a>
       </li>
       {% endif %}
       <li class="nav-item">
