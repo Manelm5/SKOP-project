@@ -162,9 +162,7 @@ def get_videos_by_userId(userId):
 
 def deleteVideoFromUrl(link):
     path = urlToBucketPath(link)[1]
-    subsPath = path.split("/")[0] + "/subtitles_" + path.split("/")[1].split(".")[0] + ".srt"
     storage.child(path).delete(path)
-    storage.child(subsPath).delete(subsPath)
     print("deleting db")
     a = db.collection(u'videos').where(u'link', u'==', link).stream()
     for docs in a:

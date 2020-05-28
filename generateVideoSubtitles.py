@@ -14,7 +14,6 @@ import srt
 import models as m
 import urllib.request
 import webvtt
-import webvtt
 import base64
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "skop-project-firebase-adminsdk-s2om4-43b7edc9ef.json"

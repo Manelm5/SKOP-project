@@ -19,6 +19,7 @@ import models as m
 import generateVideoSubtitles as subs
 import base64
 import requests
+import os
 
 # If `entrypoint` is not defined in app.yaml, App Engine will look for an app
 # called `app` in `main.py`.
@@ -29,9 +30,6 @@ app.secret_key = "1234"
 
 # This works as a controller in MVC architecture
 
-def get_as_base64(url):
-
-    return base64.b64encode(requests.get(url).content)
 
 class Category:
     def __init__(self, name, image):
