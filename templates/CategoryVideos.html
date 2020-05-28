@@ -50,8 +50,7 @@
                 <div class="card-image">
                     <div class="embed-responsive embed-responsive-16by9">
                         <video width="320" height="240" src="{{video['link']}}" type="video/mp4" controls>
-                            <track label="Español" kind="subtitles" srclang="es" src="{{video['subLink']}}" default>
-                            <track label="English" kind="subtitles" srclang="de" src="{{video['subLink']}}">
+                            <track  kind="subtitles" src="data:image/png;base64, {{video['subsBase64']}}" label="English">
                         </video>
                     </div>
                 </div>

@@ -13,10 +13,13 @@ import datetime
 import srt
 import models as m
 import urllib.request
+import webvtt
+import webvtt
+import base64
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="skop-project-firebase-adminsdk-s2om4-43b7edc9ef.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "skop-project-firebase-adminsdk-s2om4-43b7edc9ef.json"
 
-BUCKET_NAME = "skop-project.appspot.com" # update this with your bucket name
+BUCKET_NAME = "skop-project.appspot.com"  # update this with your bucket name
 
 
 def upload_blob(bucket_name, source_file_name, destination_blob_name):
@@ -37,11 +40,12 @@ def upload_blob(bucket_name, source_file_name, destination_blob_name):
         )
     )
 
-def download_video(link):
 
+def download_video(link):
     urllib.request.urlretrieve(link, 'video.mp4')
 
     return "video.mp4"
+
 
 def video_info(video_filepath):
     """ this function returns number of channels, bit rate, and sample rate of the video"""
@@ -53,6 +57,7 @@ def video_info(video_filepath):
 
     return channels, bit_rate, sample_rate
 
+
 def video_to_audio(video_filepath, audio_filename, video_channels, video_bit_rate, video_sample_rate):
     command = f"ffmpeg -i {video_filepath} -b:a {video_bit_rate} -ac {video_channels} -ar {video_sample_rate} -vn {audio_filename}"
     subprocess.call(command, shell=True)
@@ -60,8 +65,8 @@ def video_to_audio(video_filepath, audio_filename, video_channels, video_bit_rat
     upload_blob(BUCKET_NAME, audio_filename, blob_name)
     return blob_name
 
-def long_running_recognize(storage_uri, channels, sample_rate):
 
+def long_running_recognize(storage_uri, channels, sample_rate):
     client = speech_v1.SpeechClient()
 
     config = {
@@ -81,7 +86,8 @@ def long_running_recognize(storage_uri, channels, sample_rate):
     response = operation.result()
     return response
 
-def subtitle_generation(speech_to_text_response ,bin_size=3):
+
+def subtitle_generation(speech_to_text_response, bin_size=3):
     """We define a bin of time period to display the words in sync with audio.
     Here, bin_size = 3 means each bin is of 3 secs.
     All the words in the interval of 3 secs in result will be grouped togather."""
@@ -135,7 +141,7 @@ def subtitle_generation(speech_to_text_response ,bin_size=3):
                         start_microsec = word_start_microsec
                         end_sec = start_sec + bin_size
                         transcript = result.alternatives[0].words[i + 1].word
-
+                        transcript = str(transcript)
                         index += 1
                 except IndexError:
                     pass
@@ -152,6 +158,17 @@ def subtitle_generation(speech_to_text_response ,bin_size=3):
 
     return subtitles
 
+
+def change_encoding_iso_to_utf(path):
+    f = open(path, 'r', encoding="iso-8859-1")
+    content = f.read()
+    f.close()
+    f = open(path, 'w', encoding="utf-8")
+    f.write(content)
+    f.close()
+
+
+
 def generateSubtitles(link, path, title):
     video_path = download_video(link)
     print(video_path)
@@ -160,13 +177,21 @@ def generateSubtitles(link, path, title):
     gcs_uri = f"gs://{BUCKET_NAME}/{blob_name}"
     response = long_running_recognize(gcs_uri, channels, sample_rate)
     subtitles = subtitle_generation(response)
+
     with open("subtitles.srt", "w") as f:
         f.write(subtitles)
     os.remove("audio.wav")
     os.remove("video.mp4")
-    m.storage.child(path.split("/", 1)[0] + "/subtitles_" + title +".srt").put("subtitles.srt")
+    change_encoding_iso_to_utf("subtitles.srt")
+    vttSubs = webvtt.from_srt("subtitles.srt")
+    vttSubs.save()
+
+    with open("subtitles.vtt", "rb") as f:
+        data = f.read()
+        encodedBytes = base64.b64encode(data)
+
+    encodedBytes = str(encodedBytes).split("'")[1].replace("'", "")
+    os.remove("subtitles.vtt")
     os.remove("subtitles.srt")
     m.storage.child('audios').delete("audios/audio.wav")
-
-
-
+    return encodedBytes
