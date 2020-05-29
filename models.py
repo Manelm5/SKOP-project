@@ -14,7 +14,7 @@ firebase_admin.initialize_app(cred)
 db = firestore.client()
 
 config = {
-  "apiKey": "AIzaSyD6hkzuOIHHfIhgbduQxQPnQVnq2v-39wM",
+  "apiKey": "SECRET",
   "authDomain": "skop-project.firebaseapp.com",
   "databaseURL": "https://skop-project.firebaseio.com",
   "storageBucket": "skop-project.appspot.com",
