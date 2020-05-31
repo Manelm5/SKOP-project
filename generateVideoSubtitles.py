@@ -18,7 +18,7 @@ import base64
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "skop-project-firebase-adminsdk-s2om4-43b7edc9ef.json"
 
-BUCKET_NAME = "skop-project.appspot.com"  # update this with your bucket name
+BUCKET_NAME = "skop-project.appspot.com"
 
 
 def upload_blob(bucket_name, source_file_name, destination_blob_name):
@@ -42,14 +42,14 @@ def upload_blob(bucket_name, source_file_name, destination_blob_name):
 
 
 def download_video(link):
-    """return the video file"""
+    # Return the video file
     urllib.request.urlretrieve(link, 'video.mp4')
 
     return "video.mp4"
 
 
 def video_info(video_filepath):
-    """ this function returns number of channels, bit rate, and sample rate of the video"""
+    # This method returns number of channels, bit rate, and sample rate of the video"""
 
     video_data = mediainfo(video_filepath)
     channels = video_data["channels"]
@@ -60,7 +60,7 @@ def video_info(video_filepath):
 
 
 def video_to_audio(video_filepath, audio_filename, video_channels, video_bit_rate, video_sample_rate):
-    """ this function extract audio from a video"""
+    # This method extract audio from a video
 
     command = f"ffmpeg -i {video_filepath} -b:a {video_bit_rate} -ac {video_channels} -ar {video_sample_rate} -vn {audio_filename}"
     subprocess.call(command, shell=True)
@@ -70,7 +70,7 @@ def video_to_audio(video_filepath, audio_filename, video_channels, video_bit_rat
 
 
 def long_running_recognize(storage_uri, channels, sample_rate):
-    """ this function call the speech to text api and generate subs from audio input"""
+    # This method call the speech to text api and generate subs from audio input
 
     client = speech_v1.SpeechClient()
 
@@ -166,7 +166,7 @@ def subtitle_generation(speech_to_text_response, bin_size=3):
 
 
 def change_encoding_iso_to_utf(path):
-    """ this function change the encoding of a file from iso to utf"""
+    # This method change the encoding of a file from iso to utf"""
 
     f = open(path, 'r', encoding="iso-8859-1")
     content = f.read()
@@ -178,7 +178,7 @@ def change_encoding_iso_to_utf(path):
 
 
 def generateSubtitles(link, path, title):
-    """ Main function to generate and sabe subtitles from a link to firebase """
+    # Main method to generate and sabe subtitles from a link to firebase
 
     video_path = download_video(link) # store video in local
 

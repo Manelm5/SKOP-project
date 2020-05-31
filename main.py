@@ -51,7 +51,7 @@ def session_management():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    """Login function, if the request is sent we check credentials and start the user session (calling model)"""
+    # Login method, if the request is sent we check credentials and start the user session (calling model)
 
     if request.method == 'POST':
         email = request.form['email']
@@ -66,7 +66,7 @@ def login():
 
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
-    """logout function"""
+    # User logout method
 
     m.logout_user()
     return render_template("main_guille.html", categorias=categorias)
@@ -74,12 +74,12 @@ def logout():
 
 @app.route('/upload', methods=['GET', 'POST'])
 def uploadFile():
-    """This function is responsible for uploading the video
-       in the category and with the title it receives from the request.
-       Check that the name is not repeated and if it is, add an index.
-       And we create a new document in the bd with the link to the video,
-       the subtitles, and the user who has uploaded it
-    """
+    # This method is responsible for uploading the video
+    # in the category and with the title it receives from the request.
+    # Check that the name is not repeated and if it is, add an index.
+    # And we create a new document in the bd with the link to the video,
+    # the subtitles, and the user who has uploaded it
+
     copyIndex = 0
     if request.method == 'POST':
         upload = request.files['upload']
@@ -111,7 +111,7 @@ def uploadFile():
 
 @app.route('/categoryVideos', methods=['GET', 'POST'])
 def categoryVideos():
-    """Get all videos of a particular category and send it to front"""
+    # Get all videos of a particular category and send it to front
 
     category = request.args['cat']
     category_videos = m.get_videos_by_category(category)
@@ -121,7 +121,7 @@ def categoryVideos():
 
 @app.route('/myVideos', methods=['GET', 'POST'])
 def myVideos():
-    """Get all the videos of the user who has the session started"""
+    # Get all the videos of the user who has the session started
 
     userId = session["userId"]
     userVideos = m.get_videos_by_userId(userId)
@@ -137,7 +137,7 @@ def myVideos():
 
 @app.route('/', methods=['GET', 'POST'])
 def mainpage():
-    """Return a main page"""
+    # "Return a main page
 
     return render_template("main_guille.html",
                            categorias=categorias)
@@ -145,7 +145,7 @@ def mainpage():
 
 @app.route('/register', methods=["GET", "POST"])
 def register():
-    """this function call to model for creating a new user in the bd, if correct, and returns the login form"""
+    # This method call to model for creating a new user in the bd, if correct, and returns the login form
 
     if request.method == 'POST':
         firstname = request.form['firstname']
@@ -166,7 +166,7 @@ def register():
 
 
 def isRepeatedName(name):
-    """function to chech if a new video name already exist in storage """
+    # Method for check if a new video name already exist in Storage
 
     a = m.storage.child('').list_files()
     names = list()

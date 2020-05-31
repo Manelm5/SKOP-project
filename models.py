@@ -8,12 +8,12 @@ import re
 import pyrebase
 import json
 
-"""inicializate firebase conecction with .json credentials """
+# Inicializate firebase conecction with .json credentials
 
 cred = credentials.Certificate('skop-project-firebase-adminsdk-s2om4-43b7edc9ef.json')
 firebase_admin.initialize_app(cred)
 
-"""init data base"""
+# Get Firestore database reference
 db = firestore.client()
 
 config = {
@@ -26,14 +26,14 @@ config = {
   "projectId": "skop-project"
 }
 
-"""make the auth and init the storage"""
+# Make initialize Auth object and initialize the Storage object
 auth_pyrebase = pyrebase.initialize_app(config)
 auth = auth_pyrebase.auth()
 
 storage = auth_pyrebase.storage()
 
 
-"""class for handle users"""
+# Class for handle users
 class Person:
     def __init__(self, email, phone_number, password, display_name, photo_url):
         self.email = email
@@ -42,20 +42,20 @@ class Person:
         self.display_name = display_name
         self.photo_url = photo_url
 
-
+# Print user uid by uid
 def checkUserById(uid):
-    """print"""
     user = auth.get_user(uid)
     print('Successfully fetched user data: {0}'.format(user.uid))
 
 
+# Print user uid by email
 def checkUserByEmail(email):
     user = auth.get_user_by_email(email)
     print('Successfully fetched user data: {0}'.format(user.uid))
 
 
+# Create a new user in Firebase Auth with user credentials.
 def createUser(userCredentials):
-    """create a new user entry in bd if is correct """
     user = auth.create_user(
         email=userCredentials.email,
         email_verified=userCredentials.email_verified,
@@ -68,8 +68,8 @@ def createUser(userCredentials):
     print('Successfully created new user: {0}'.format(user.uid))
 
 
+# Update user data in Firebase Auth.
 def updateUser(userCredentials):
-    """function to change user data in db"""
     user = auth.update_user(email=userCredentials.email,
                             email_verified=userCredentials.email_verified,
                             phone_number=userCredentials.phone_number,
@@ -81,16 +81,14 @@ def updateUser(userCredentials):
     print('Successfully updated the new user: {0}'.format(user.uid))
 
 
+# Delete a user from Firebase Auth.
 def deleteUserById(uid):
-    """function to delete user from db"""
-
     auth.delete_user(uid)
     print('Successfully deleted user')
 
 
+# Prints all user in Firebase Auth.
 def printAllUsers():
-    """function to print all users in db"""
-
     # Start listing users from the beginning, 1000 at a time.
     page = auth.list_users()
     while page:
@@ -105,8 +103,10 @@ def printAllUsers():
         print('User: ' + user.uid)
 
 
+# Register user. Create a Firebase Auth user with email and password and
+# saves a document with the firstname and lastname in the Users collection with
+# the userId as document name.
 def registerUser(email, password, firstname, lastname):
-    """function to register new user in our db with email pass and name parametres"""
 
     response = []
     try:
@@ -131,9 +131,11 @@ def registerUser(email, password, firstname, lastname):
     return response
 
 
-def login_user(email, password):
-    """make the login from firebase auth method"""
+# Login user. Validate the user email and password with Firebase Auth
+# and saves the returned userId in the session.
 
+# If the validation goes wrong, print the error.
+def login_user(email, password):
     session["userId"] = None
     try:
         user = auth.sign_in_with_email_and_password(email, password)
@@ -149,28 +151,26 @@ def login_user(email, password):
     print(response)
     return session["userId"]
 
-
+# Logout user. Removes userId from the current session.
 def logout_user():
-    """delete userId session for make logout"""
-
     user_id = session["userId"]
     session["userId"] = None
     response = "User " + str(user_id) + " log out successfully"
     print(response)
     return response
 
-
+# Get all video documents with a specific category.
+# Return an array of videos.
 def get_videos_by_category(category):
-    """return all videos from a categorty"""
-
     existing_videos = db.collection(u'videos').where(u'category', u'==', category).stream()
     videos = []
     for post in existing_videos:
         videos.append(post.to_dict())
     return videos
 
+# Get all video documents with a specific userId.
+# Return an array of videos.
 def get_videos_by_userId(userId):
-    """return all videos from an user """
 
     existing_videos = db.collection(u'videos').where(u'userId', u'==', userId).stream()
     videos = []
@@ -178,9 +178,8 @@ def get_videos_by_userId(userId):
         videos.append(post.to_dict())
     return videos
 
+# Delete a video from Storage and the video document of Firestore
 def deleteVideoFromUrl(link):
-    """delete video from storage passing video link by reference"""
-
     path = urlToBucketPath(link)[1]
     storage.child(path).delete(path)
     print("deleting db")
@@ -191,8 +190,9 @@ def deleteVideoFromUrl(link):
     print("db delete")
 
 def urlToBucketPath (url):
-    """Convert a Firebase HTTP URL to a (bucket, path) tuple,  Firebase's `refFromURL`."""
-
+    """Convert a Firebase HTTP URL to a (bucket, path) tuple,
+    Firebase's `refFromURL`.
+    """
     bucket_domain = '([A-Za-z0-9.\\-]+)'
     is_http = not url.startswith('gs://')
 
@@ -215,4 +215,4 @@ def urlToBucketPath (url):
     if is_http:
         path = parse.unquote(path)
 
-    return bucket, path
+    return (bucket, path)
