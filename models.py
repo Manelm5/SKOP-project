@@ -8,9 +8,12 @@ import re
 import pyrebase
 import json
 
+"""inicializate firebase conecction with .json credentials """
+
 cred = credentials.Certificate('skop-project-firebase-adminsdk-s2om4-43b7edc9ef.json')
 firebase_admin.initialize_app(cred)
 
+"""init data base"""
 db = firestore.client()
 
 config = {
@@ -22,15 +25,15 @@ config = {
   "messagingSenderId": "518648299242",
   "projectId": "skop-project"
 }
+
+"""make the auth and init the storage"""
 auth_pyrebase = pyrebase.initialize_app(config)
 auth = auth_pyrebase.auth()
 
 storage = auth_pyrebase.storage()
 
 
-
-# p1 = Person('example@example.com', +34689876876, 'secretPassword', 'John Doe',
-# 'http://www.example.com/12345678/photo.png')
+"""class for handle users"""
 class Person:
     def __init__(self, email, phone_number, password, display_name, photo_url):
         self.email = email
@@ -41,6 +44,7 @@ class Person:
 
 
 def checkUserById(uid):
+    """print"""
     user = auth.get_user(uid)
     print('Successfully fetched user data: {0}'.format(user.uid))
 
@@ -51,6 +55,7 @@ def checkUserByEmail(email):
 
 
 def createUser(userCredentials):
+    """create a new user entry in bd if is correct """
     user = auth.create_user(
         email=userCredentials.email,
         email_verified=userCredentials.email_verified,
@@ -64,6 +69,7 @@ def createUser(userCredentials):
 
 
 def updateUser(userCredentials):
+    """function to change user data in db"""
     user = auth.update_user(email=userCredentials.email,
                             email_verified=userCredentials.email_verified,
                             phone_number=userCredentials.phone_number,
@@ -76,11 +82,15 @@ def updateUser(userCredentials):
 
 
 def deleteUserById(uid):
+    """function to delete user from db"""
+
     auth.delete_user(uid)
     print('Successfully deleted user')
 
 
 def printAllUsers():
+    """function to print all users in db"""
+
     # Start listing users from the beginning, 1000 at a time.
     page = auth.list_users()
     while page:
@@ -96,6 +106,7 @@ def printAllUsers():
 
 
 def registerUser(email, password, firstname, lastname):
+    """function to register new user in our db with email pass and name parametres"""
 
     response = []
     try:
@@ -121,6 +132,8 @@ def registerUser(email, password, firstname, lastname):
 
 
 def login_user(email, password):
+    """make the login from firebase auth method"""
+
     session["userId"] = None
     try:
         user = auth.sign_in_with_email_and_password(email, password)
@@ -138,6 +151,8 @@ def login_user(email, password):
 
 
 def logout_user():
+    """delete userId session for make logout"""
+
     user_id = session["userId"]
     session["userId"] = None
     response = "User " + str(user_id) + " log out successfully"
@@ -146,6 +161,8 @@ def logout_user():
 
 
 def get_videos_by_category(category):
+    """return all videos from a categorty"""
+
     existing_videos = db.collection(u'videos').where(u'category', u'==', category).stream()
     videos = []
     for post in existing_videos:
@@ -153,6 +170,7 @@ def get_videos_by_category(category):
     return videos
 
 def get_videos_by_userId(userId):
+    """return all videos from an user """
 
     existing_videos = db.collection(u'videos').where(u'userId', u'==', userId).stream()
     videos = []
@@ -161,6 +179,8 @@ def get_videos_by_userId(userId):
     return videos
 
 def deleteVideoFromUrl(link):
+    """delete video from storage passing video link by reference"""
+
     path = urlToBucketPath(link)[1]
     storage.child(path).delete(path)
     print("deleting db")
@@ -171,9 +191,8 @@ def deleteVideoFromUrl(link):
     print("db delete")
 
 def urlToBucketPath (url):
-    """Convert a Firebase HTTP URL to a (bucket, path) tuple,
-    Firebase's `refFromURL`.
-    """
+    """Convert a Firebase HTTP URL to a (bucket, path) tuple,  Firebase's `refFromURL`."""
+
     bucket_domain = '([A-Za-z0-9.\\-]+)'
     is_http = not url.startswith('gs://')
 
@@ -196,4 +215,4 @@ def urlToBucketPath (url):
     if is_http:
         path = parse.unquote(path)
 
-    return (bucket, path)
+    return bucket, path

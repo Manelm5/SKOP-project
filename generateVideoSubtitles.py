@@ -23,6 +23,7 @@ BUCKET_NAME = "skop-project.appspot.com"  # update this with your bucket name
 
 def upload_blob(bucket_name, source_file_name, destination_blob_name):
     """Uploads a file to the bucket."""
+
     # bucket_name = "your-bucket-name"
     # source_file_name = "local/path/to/file"
     # destination_blob_name = "storage-object-name"
@@ -41,6 +42,7 @@ def upload_blob(bucket_name, source_file_name, destination_blob_name):
 
 
 def download_video(link):
+    """return the video file"""
     urllib.request.urlretrieve(link, 'video.mp4')
 
     return "video.mp4"
@@ -58,6 +60,8 @@ def video_info(video_filepath):
 
 
 def video_to_audio(video_filepath, audio_filename, video_channels, video_bit_rate, video_sample_rate):
+    """ this function extract audio from a video"""
+
     command = f"ffmpeg -i {video_filepath} -b:a {video_bit_rate} -ac {video_channels} -ar {video_sample_rate} -vn {audio_filename}"
     subprocess.call(command, shell=True)
     blob_name = f"audios/{audio_filename}"
@@ -66,6 +70,8 @@ def video_to_audio(video_filepath, audio_filename, video_channels, video_bit_rat
 
 
 def long_running_recognize(storage_uri, channels, sample_rate):
+    """ this function call the speech to text api and generate subs from audio input"""
+
     client = speech_v1.SpeechClient()
 
     config = {
@@ -90,6 +96,7 @@ def subtitle_generation(speech_to_text_response, bin_size=3):
     """We define a bin of time period to display the words in sync with audio.
     Here, bin_size = 3 means each bin is of 3 secs.
     All the words in the interval of 3 secs in result will be grouped togather."""
+
     transcriptions = []
     index = 0
 
@@ -159,6 +166,8 @@ def subtitle_generation(speech_to_text_response, bin_size=3):
 
 
 def change_encoding_iso_to_utf(path):
+    """ this function change the encoding of a file from iso to utf"""
+
     f = open(path, 'r', encoding="iso-8859-1")
     content = f.read()
     f.close()
@@ -169,28 +178,33 @@ def change_encoding_iso_to_utf(path):
 
 
 def generateSubtitles(link, path, title):
-    video_path = download_video(link)
-    print(video_path)
+    """ Main function to generate and sabe subtitles from a link to firebase """
+
+    video_path = download_video(link) # store video in local
+
     channels, bit_rate, sample_rate = video_info(video_path)
     blob_name = video_to_audio(video_path, "audio.wav", channels, bit_rate, sample_rate)
     gcs_uri = f"gs://{BUCKET_NAME}/{blob_name}"
-    response = long_running_recognize(gcs_uri, channels, sample_rate)
-    subtitles = subtitle_generation(response)
+    response = long_running_recognize(gcs_uri, channels, sample_rate)   #generate text from audio
 
-    with open("subtitles.srt", "w") as f:
+    subtitles = subtitle_generation(response)   #generate subtitles format from strings
+
+    with open("subtitles.srt", "w") as f:       #save subs in srt file
         f.write(subtitles)
-    os.remove("audio.wav")
+
+    os.remove("audio.wav")  #remnove temp files
     os.remove("video.mp4")
-    change_encoding_iso_to_utf("subtitles.srt")
+
+    change_encoding_iso_to_utf("subtitles.srt")     #change the encoding so you can change the file extension later
     vttSubs = webvtt.from_srt("subtitles.srt")
     vttSubs.save()
 
     with open("subtitles.vtt", "rb") as f:
         data = f.read()
-        encodedBytes = base64.b64encode(data)
+        encodedBytes = base64.b64encode(data)       #convert new .vtt to base64 data to storage in BD and call it from front
 
-    encodedBytes = str(encodedBytes).split("'")[1].replace("'", "")
+    encodedBytes = str(encodedBytes).split("'")[1].replace("'", "") #little fix for remove ''
     os.remove("subtitles.vtt")
     os.remove("subtitles.srt")
-    m.storage.child('audios').delete("audios/audio.wav")
+    m.storage.child('audios').delete("audios/audio.wav")    #delete temp files
     return encodedBytes
